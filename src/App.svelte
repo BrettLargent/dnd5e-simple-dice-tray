@@ -7,12 +7,10 @@
   export let isVisible = false;
 
   const dice = [4, 6, 8, 10, 12, 20, 100];
-  const enterEvent = jQuery.Event("keydown");
-  enterEvent.which = 13;
-  enterEvent.keycode = 13;
-  enterEvent.code = "Enter";
-  enterEvent.key = "Enter";
-  enterEvent.originalEvent = new Event("keydown");
+  const enterEvent = new KeyboardEvent("keydown", {
+    code: "Enter",
+    key: "Enter",
+  });
   let chatMessage;
 
   function handleInputInput(event) {
@@ -56,7 +54,7 @@
     $khl = type;
   }
   function handleRollClick() {
-    chatMessage.trigger(enterEvent);
+    chatMessage.dispatchEvent(enterEvent);
     khl.update(() => "");
     dicePool.clear();
   }
@@ -77,14 +75,16 @@
     }
   }
   $: {
-    if (chatMessage?.[0]) {
-      chatMessage.val($chatString);
+    if (chatMessage) {
+      chatMessage.value = $chatString;
     }
   }
 
   onMount(() => {
-    chatMessage = jQuery("#chat-message");
-    jQuery(".chat-control-icon").on("click", toggleVisibility);
+    chatMessage = document.querySelector("#chat-message");
+    document
+      .querySelector(".chat-control-icon")
+      .addEventListener("click", toggleVisibility);
 
     feather.replace();
   });
